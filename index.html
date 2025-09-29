@@ -95,6 +95,24 @@
     #annivSong.show {
       display: block;
     }
+    .fade-image {
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      top: 10%;
+      transform: translate(-50%, 0);
+      max-width: 260px;
+      max-height: 260px;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(255,105,180,0.18);
+      z-index: 100;
+      pointer-events: none;
+      transition: opacity 1s;
+    }
+    .fade-image.visible {
+      opacity: 1;
+      transition: opacity 1s;
+    }
     @media (max-width: 500px) {
       .container {
         max-width: 98vw;
@@ -111,10 +129,14 @@
         font-size: 1.01rem;
         padding: 10px 7px;
       }
+      .fade-image {
+        max-width: 70vw;
+        max-height: 40vh;
+        top: 5%;
+      }
     }
   </style>
 </head>
-  <script src="script.js"></script>
 <body>
   <div class="container" id="mainContainer">
     <div class="heart">♥</div>
@@ -124,8 +146,24 @@
     <div class="message" id="message">Every click is a little love from me! 💗</div>
     <!-- Hidden audio element for your song, will show controls if autoplay fails -->
     <audio id="annivSong" src="https://raw.githubusercontent.com/ajisashi08/O.O/main/Rex%20Orange%20County%20-%20New%20House%20(Official%20Audio).mp3" preload="auto" controls></audio>
+    <img id="fadeImage" class="fade-image" src="" alt="Your photo together" />
   </div>
   <script>
+    // Array of all your .jfif images in the repo
+    const images = [
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/16102b7f-efc4-4a09-995a-8130076c08c0.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/21e114c9-ed50-4b72-b237-f8bbea266f62.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/25ea315b-5be1-437a-87b-b5b100cdbc3.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/39c1a381-5eca-427b-8029-0brefe7d808ea.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/76ce0f11-9ab9-44f3-8cd8-0e20134269c0.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/85090b96-3de9-4867-8188-53c05864900d.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/8abf96c6-3e39-49c4-8a10-d4b9930d19e9.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/94507461-eb6d-46d4-8ec5-c7ef4e25fd8d.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/e11b3f1a-db68-4ca8-a1a9-4335bd1145c2.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/e2259865-3e79-48ec-9dc1-c53c0c077f44.jfif",
+      "https://raw.githubusercontent.com/ajisashi08/O.O/main/fb5773a4-908f-4bf0-8bc4-af420c3ab1a6.jfif"
+    ];
+
     const messages = [
       "Sumubok ka,,,,,",
       "The way you make time for me like sondo sondo 💞",
@@ -147,12 +185,14 @@
     let clickCount = 0;
     let lastMsgIndex = 0;
     let songPlayed = false;
+    let lastImgIndex = -1;
 
     const clickBtn = document.getElementById('clickBtn');
     const messageDiv = document.getElementById('message');
     const counterDiv = document.getElementById('counter');
     const container = document.getElementById('mainContainer');
     const annivSong = document.getElementById('annivSong');
+    const fadeImage = document.getElementById('fadeImage');
 
     clickBtn.addEventListener('click', () => {
       clickCount++;
@@ -185,6 +225,19 @@
         });
         songPlayed = true;
       }
+
+      // Show fade-in/fade-out image
+      let imgIdx;
+      do {
+        imgIdx = Math.floor(Math.random() * images.length);
+      } while (imgIdx === lastImgIndex && images.length > 1);
+      lastImgIndex = imgIdx;
+      fadeImage.src = images[imgIdx];
+      fadeImage.classList.add("visible");
+      clearTimeout(fadeImage._fadeTimeout);
+      fadeImage._fadeTimeout = setTimeout(() => {
+        fadeImage.classList.remove("visible");
+      }, 3000); // 3 seconds
     });
 
     function moveContainerRandomly() {

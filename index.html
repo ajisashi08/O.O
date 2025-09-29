@@ -115,6 +115,8 @@
     <div class="counter" id="counter">Clicks: 0</div>
     <div class="message" id="message">Every click is a little love from me! 💗</div>
   </div>
+  <!-- Hidden audio element for your song -->
+  <audio id="annivSong" src="https://raw.githubusercontent.com/ajisashi08/WordsToPonder/main/Rex%20Orange%20County%20-%20New%20House%20(Official%20Audio).mp3"></audio>
   <script>
     const messages = [
       "Sumubok ka,,,,,",
@@ -141,6 +143,7 @@
     const messageDiv = document.getElementById('message');
     const counterDiv = document.getElementById('counter');
     const container = document.getElementById('mainContainer');
+    const annivSong = document.getElementById('annivSong');
 
     clickBtn.addEventListener('click', () => {
       if (clickCount < maxClicks) {
@@ -164,6 +167,8 @@
           container.style.transform = 'translate(-50%, -50%)';
           clickBtn.disabled = true;
           clickBtn.textContent = "Done!";
+          // Play the song!
+          annivSong.play();
         }
       }
     });

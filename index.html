@@ -95,6 +95,7 @@
     #annivSong.show {
       display: block;
     }
+    /* ✨ Correct CSS for fade-image */
     .fade-image {
       opacity: 0;
       position: absolute;
@@ -111,29 +112,6 @@
     }
     .fade-image.visible {
       opacity: 1;
-      transition: opacity 1s;
-    }
-    @media (max-width: 500px) {
-      .container {
-        max-width: 98vw;
-        padding: 18px 3vw 22px 3vw;
-      }
-      .click-btn {
-        font-size: 1.25rem;
-        padding: 13px 20px;
-      }
-      .heart {
-        font-size: 2rem;
-      }
-      .message {
-        font-size: 1.01rem;
-        padding: 10px 7px;
-      }
-      .fade-image {
-        max-width: 70vw;
-        max-height: 40vh;
-        top: 5%;
-      }
     }
   </style>
 </head>
@@ -144,12 +122,12 @@
     <button class="click-btn" id="clickBtn">Click Me!</button>
     <div class="counter" id="counter">Clicks: 0</div>
     <div class="message" id="message">Every click is a little love from me! 💗</div>
-    <!-- Hidden audio element for your song, will show controls if autoplay fails -->
     <audio id="annivSong" src="https://raw.githubusercontent.com/ajisashi08/O.O/main/Rex%20Orange%20County%20-%20New%20House%20(Official%20Audio).mp3" preload="auto" controls></audio>
     <img id="fadeImage" class="fade-image" src="" alt="Your photo together" />
   </div>
+
   <script>
-    // Array of all your .jfif images in the repo
+    // Array of all your .jfif images
     const images = [
       "https://raw.githubusercontent.com/ajisashi08/O.O/main/16102b7f-efc4-4a09-995a-8130076c08c0.jfif",
       "https://raw.githubusercontent.com/ajisashi08/O.O/main/21e114c9-ed50-4b72-b237-f8bbea266f62.jfif",
@@ -184,8 +162,8 @@
 
     let clickCount = 0;
     let lastMsgIndex = 0;
-    let songPlayed = false;
     let lastImgIndex = -1;
+    let songPlayed = false;
 
     const clickBtn = document.getElementById('clickBtn');
     const messageDiv = document.getElementById('message');
@@ -197,6 +175,8 @@
     clickBtn.addEventListener('click', () => {
       clickCount++;
       counterDiv.textContent = `Clicks: ${clickCount}`;
+
+      // random message
       let idx;
       do {
         idx = Math.floor(Math.random() * messages.length);
@@ -204,6 +184,7 @@
       lastMsgIndex = idx;
       messageDiv.textContent = clickCount < maxClicks ? messages[idx] : finalMessage;
 
+      // move or lock
       if (clickCount < maxClicks) {
         moveContainerRandomly();
       } else {
@@ -214,35 +195,35 @@
         clickBtn.textContent = "Done!";
       }
 
-      // Play song after the first click
+      // play song
       if (!songPlayed) {
         annivSong.classList.add("show");
         annivSong.currentTime = 0;
         annivSong.play().catch(() => {
-          // If browser blocks autoplay, show controls so she can press Play
-          annivSong.classList.add("show");
           messageDiv.innerHTML += "<br><em>Tap play below to hear your song!</em>";
         });
         songPlayed = true;
       }
 
-      // Show fade-in/fade-out image
+      // random image fade in/out
       let imgIdx;
       do {
         imgIdx = Math.floor(Math.random() * images.length);
       } while (imgIdx === lastImgIndex && images.length > 1);
       lastImgIndex = imgIdx;
+
       fadeImage.src = images[imgIdx];
       fadeImage.classList.add("visible");
+
       clearTimeout(fadeImage._fadeTimeout);
       fadeImage._fadeTimeout = setTimeout(() => {
         fadeImage.classList.remove("visible");
-      }, 3000); // 3 seconds
+      }, 3000);
     });
 
     function moveContainerRandomly() {
-      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
       const contRect = container.getBoundingClientRect();
       const contW = contRect.width;
       const contH = contRect.height;
@@ -252,6 +233,7 @@
       const maxLeft = vw - contW - padding;
       const minTop = padding;
       const maxTop = vh - contH - padding;
+
       const randomLeft = Math.random() * (maxLeft - minLeft) + minLeft;
       const randomTop = Math.random() * (maxTop - minTop) + minTop;
 

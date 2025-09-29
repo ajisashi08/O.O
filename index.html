@@ -88,6 +88,13 @@
       font-family: 'Pacifico', cursive;
       letter-spacing: 1px;
     }
+    #annivSong {
+      margin-top: 16px;
+      display: none;
+    }
+    #annivSong.show {
+      display: block;
+    }
     @media (max-width: 500px) {
       .container {
         max-width: 98vw;
@@ -114,9 +121,9 @@
     <button class="click-btn" id="clickBtn">Click Me!</button>
     <div class="counter" id="counter">Clicks: 0</div>
     <div class="message" id="message">Every click is a little love from me! 💗</div>
+    <!-- Hidden audio element for your song, will show controls if autoplay fails -->
+    <audio id="annivSong" src="https://raw.githubusercontent.com/ajisashi08/WordsToPonder/main/Annivsong.mp3" preload="auto" controls></audio>
   </div>
-  <!-- Hidden audio element for your song -->
-  <audio id="annivSong" src="https://raw.githubusercontent.com/ajisashi08/WordsToPonder/main/Rex%20Orange%20County%20-%20New%20House%20(Official%20Audio).mp3"></audio>
   <script>
     const messages = [
       "Sumubok ka,,,,,",
@@ -138,6 +145,7 @@
 
     let clickCount = 0;
     let lastMsgIndex = 0;
+    let songPlayed = false;
 
     const clickBtn = document.getElementById('clickBtn');
     const messageDiv = document.getElementById('message');
@@ -146,43 +154,45 @@
     const annivSong = document.getElementById('annivSong');
 
     clickBtn.addEventListener('click', () => {
-      if (clickCount < maxClicks) {
-        clickCount++;
-        counterDiv.textContent = `Clicks: ${clickCount}`;
-        // Pick a random message, avoid repeating the last one
-        let idx;
-        do {
-          idx = Math.floor(Math.random() * messages.length);
-        } while (idx === lastMsgIndex && messages.length > 1);
-        lastMsgIndex = idx;
-        messageDiv.textContent = clickCount < maxClicks ? messages[idx] : finalMessage;
+      clickCount++;
+      counterDiv.textContent = `Clicks: ${clickCount}`;
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * messages.length);
+      } while (idx === lastMsgIndex && messages.length > 1);
+      lastMsgIndex = idx;
+      messageDiv.textContent = clickCount < maxClicks ? messages[idx] : finalMessage;
 
-        // Move the container randomly for first 11 clicks
-        if (clickCount < maxClicks) {
-          moveContainerRandomly();
-        } else {
-          // Final position: center (reset to center)
-          container.style.left = '50%';
-          container.style.top = '50%';
-          container.style.transform = 'translate(-50%, -50%)';
-          clickBtn.disabled = true;
-          clickBtn.textContent = "Done!";
-          // Play the song!
-          annivSong.play();
-        }
+      if (clickCount < maxClicks) {
+        moveContainerRandomly();
+      } else {
+        container.style.left = '50%';
+        container.style.top = '50%';
+        container.style.transform = 'translate(-50%, -50%)';
+        clickBtn.disabled = true;
+        clickBtn.textContent = "Done!";
+      }
+
+      // Play song after the first click
+      if (!songPlayed) {
+        annivSong.classList.add("show");
+        annivSong.currentTime = 0;
+        annivSong.play().catch(() => {
+          // If browser blocks autoplay, show controls so she can press Play
+          annivSong.classList.add("show");
+          messageDiv.innerHTML += "<br><em>Tap play below to hear your song!</em>";
+        });
+        songPlayed = true;
       }
     });
 
     function moveContainerRandomly() {
-      // Get viewport size
       const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
       const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-      // Get container size
       const contRect = container.getBoundingClientRect();
       const contW = contRect.width;
       const contH = contRect.height;
 
-      // Compute random positions within the viewport but not too close to the edge
       const padding = 20;
       const minLeft = padding;
       const maxLeft = vw - contW - padding;
